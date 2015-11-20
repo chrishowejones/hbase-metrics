@@ -9,4 +9,6 @@
   :main ^:skip-aot hbase-metrics.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[org.apache.hadoop/hadoop-core "1.1.2"]]}})
+             :dev {:dependencies [[org.apache.hadoop/hadoop-client "2.7.1"]]}
+             :provided {:dependencies [[org.apache.hadoop/hadoop-client "2.7.1"]]}}
+)

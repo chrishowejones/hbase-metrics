@@ -46,7 +46,7 @@
 
 
 
-  (run-query "out-file.csv" 60000)
+  (run-query "out-file.csv" 5000)
 
   (def a ["123,456,789" "111,222,333"])
 
