@@ -35,7 +35,7 @@
      [?bucket ?avg-latency]
      (timestamp-tap :> ?line)
      (timestamp-parser :< ?line :> ?msg-timestamp ?hbase-timestamp)
-     (- ?msg-timestamp ?hbase-timestamp :> ?msg-latency)
+     (- ?hbase-timestamp ?msg-timestamp :> ?msg-latency)
      (div ?msg-timestamp interval :> ?bucket)
      (c/avg ?msg-latency :> ?avg-latency))))
 
@@ -43,7 +43,7 @@
 
 (comment
 
-  (run-query "out-file.csv" 5000)
+  (run-query "out-file-new.csv" 5000)
 
   (def a ["123,456,789" "111,222,333"])
 
