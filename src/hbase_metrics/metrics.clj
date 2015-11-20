@@ -3,7 +3,9 @@
             [cascalog.logic.def :as def]
             [cascalog.logic.ops :as c]
             [clojure.data.csv :as csv]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clj-time.core :as t]
+            [clj-time.format :as f]))
 
 (def timestamps
   (line-seq (clojure.java.io/reader "out-file.csv")))
@@ -22,14 +24,14 @@
 (def/defbufferfn total-latency [tuples]
   [(reduce + (map first tuples))])
 
-;; TODO add an additional field on input to represent latency
-;; TODO calculate the interval 'bucket' time
-;; TODO group by interval 'bucket' time
+(defn out-filename
+  ([] (out-filename "metrics"))
+  ([filepath] (str filepath "-" (f/unparse (f/formatters :basic-date-time-no-ms) (t/now)))))
 
 (defn run-query [file interval]
   (let [timestamp-tap (hfs-textline file)]
     (?<-
-     (stdout)
+     (hfs-textline (out-filename))
      [?bucket ?avg-latency]
      (timestamp-tap :> ?line)
      (timestamp-parser :< ?line :> ?msg-timestamp ?hbase-timestamp)
@@ -40,11 +42,6 @@
 
 
 (comment
-
-    (div ?msg-timestamp 5000 :> ?bucket)
-    (c/avg ?msg-latency :> ?avg-latency)
-
-
 
   (run-query "out-file.csv" 5000)
 
