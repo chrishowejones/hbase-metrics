@@ -3,6 +3,9 @@
   (:gen-class))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (run-query (first args) (Long/parseLong (second args))))
+  "Run query over hbase timestamps to get average latency over a specified interval in ms.
+  Usage: hadoop jar hbase-metrics-<version>-standalone.jar <input HDFS
+  file path> <sample interval in ms> <optional: output HDFS file path,
+  defaults to /metrics>"
+  [input-filepath interval output-filepath]
+  (run-query input-filepath (Long/parseLong interval) output-filepath))

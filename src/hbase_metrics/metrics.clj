@@ -7,9 +7,6 @@
             [clj-time.core :as t]
             [clj-time.format :as f]))
 
-(def timestamps
-  (line-seq (clojure.java.io/reader "out-file.csv")))
-
 (def/defmapfn timestamp-parser
   "Split the csv line into fields discarding the seqnum"
   [line]
@@ -28,10 +25,10 @@
   ([] (out-filename "metrics"))
   ([filepath] (str filepath "-" (f/unparse (f/formatters :basic-date-time-no-ms) (t/now)))))
 
-(defn run-query [file interval]
-  (let [timestamp-tap (hfs-textline file)]
+(defn run-query [in-filepath interval out-filepath]
+  (let [timestamp-tap (hfs-textline in-filepath)]
     (?<-
-     (hfs-textline (out-filename))
+     (hfs-textline (out-filename out-filepath))
      [?bucket ?avg-latency]
      (timestamp-tap :> ?line)
      (timestamp-parser :< ?line :> ?msg-timestamp ?hbase-timestamp)
@@ -43,7 +40,7 @@
 
 (comment
 
-  (run-query "out-file-new.csv" 5000)
+  (run-query "out-file-new.csv" 5000 "output")
 
   (def a ["123,456,789" "111,222,333"])
 
@@ -51,10 +48,3 @@
   (doc str/split)
 
   )
-
-(comment
-                   [org.apache.hadoop/hadoop-client "2.7.1.2.3.0.0-2557"
-                  :exclusions [[org.slf4j/slf4j-log4j12]]]
-
-
-                   )
