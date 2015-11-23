@@ -7,6 +7,7 @@
             [clj-time.core :as t]
             [clj-time.format :as f]))
 
+
 (def/defmapfn timestamp-parser
   "Split the csv line into fields discarding the seqnum"
   [line]
@@ -15,8 +16,9 @@
 (def/defmapfn latency [msg-timestamp hbase-timestamp]
   (- msg-timestamp hbase-timestamp))
 
-(def/defmapfn timestamp->bucket [msg-timestamp]
-  (int (/ msg-timestamp 5000)))
+(def/defmapfn timestamp->bucket [interval msg-ts]
+    (int (/ msg-ts interval)))
+
 
 (def/defbufferfn total-latency [tuples]
   [(reduce + (map first tuples))])
@@ -33,9 +35,8 @@
      (timestamp-tap :> ?line)
      (timestamp-parser :< ?line :> ?msg-timestamp ?hbase-timestamp)
      (- ?hbase-timestamp ?msg-timestamp :> ?msg-latency)
-     (div ?msg-timestamp interval :> ?bucket)
+     (timestamp->bucket interval ?msg-timestamp :> ?bucket)
      (c/avg ?msg-latency :> ?avg-latency))))
-
 
 
 (comment
