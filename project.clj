@@ -12,4 +12,5 @@
   :aot [:all]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
+             :provided {:dependencies [[org.apache.hadoop/hadoop-client "2.7.1"]]}
              :dev {:dependencies [[org.apache.hadoop/hadoop-client "2.7.1"]]}})
