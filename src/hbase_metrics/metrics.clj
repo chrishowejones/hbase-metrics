@@ -19,7 +19,6 @@
 (def/defmapfn timestamp->bucket [interval msg-ts]
     (int (/ msg-ts interval)))
 
-
 (def/defbufferfn total-latency [tuples]
   [(reduce + (map first tuples))])
 
