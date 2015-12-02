@@ -30,17 +30,21 @@
   (let [timestamp-tap (hfs-textline in-filepath)]
     (?<-
      (hfs-textline (out-filename out-filepath))
-     [?bucket ?avg-latency]
+     [?bucket ?avg-latency ?avg-storm-latency ?avg-stormhbase-latency]
      (timestamp-tap :> ?line)
-     (timestamp-parser :< ?line :> ?msg-timestamp ?hbase-timestamp)
+     (timestamp-parser :< ?line :> ?msg-timestamp ?storm-timestamp ?stormhbase-timestamp ?hbase-timestamp)
      (- ?hbase-timestamp ?msg-timestamp :> ?msg-latency)
+     (- ?storm-timestamp ?msg-timestamp :> ?storm-latency)
+     (- ?stormhbase-timestamp ?msg-timestamp :> ?stormhbase-latency)
      (timestamp->bucket interval ?msg-timestamp :> ?bucket)
-     (c/avg ?msg-latency :> ?avg-latency))))
+     (c/avg ?msg-latency :> ?avg-latency)
+     (c/avg ?storm-latency :> ?avg-storm-latency)
+     (c/avg ?stormhbase-latency :> ?avg-stormhbase-latency))))
 
 
 (comment
 
-  (run-query "out-file-new.csv" 5000 "output")
+  (run-query "../query-txn-hbase/out-file.csv" 5000 "output")
 
   (def a ["123,456,789" "111,222,333"])
 
